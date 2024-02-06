@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+</head>
+<body>
+
+    <h1>Face Recognition</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+        <input type="file" name="file" accept="image/*" onchange="previewImage()">
+        <input type="text" name="name" placeholder="الاسم"> <!-- حقل الاسم -->
+        <input type="submit" value="Upload">
+    </form>
+
+    <div id="result">
+        <!-- عرض النتائج هنا -->
+    </div>
+
+    <script>
+        function getResult() {
+            var fileInput = document.querySelector('input[type="file"]');
+            var nameInput = document.querySelector('input[name="name"]');
+            var resultDiv = document.getElementById('result');
+
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', nameInput.value);
+
+                fetch('/recognize', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // عرض النتائج في resultDiv
+                    resultDiv.innerHTML = `الاسم: ${data.names.join(', ')}<br>النتائج: ${data.result}`;
+
+                   // عرض النتائج في resultDiv
+resultDiv.innerHTML = `الاسم: ${data.names.join(', ')}<br>النتائج: ${data.result}`;
+
+// إذا كان هناك صورة، قم بعرضها
+if (data.image) {
+    // استخدام الطريقة الأولى (innerHTML) لعرض الصورة كنص
+    resultDiv.innerHTML += `<br>الصورة: <img src="${data.image}" alt="Uploaded Image">`;
+
+    // استخدام الطريقة الثانية (createElement و appendChild) لإضافة الصورة كعنصر فرعي
+    var imageElement = document.createElement('img');
+    imageElement.src = data.image;
+    imageElement.alt = 'Uploaded Image';
+    resultDiv.appendChild(imageElement);
+}
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        function previewImage() {
+            var fileInput = document.querySelector('input[type="file"]');
+            var resultDiv = document.getElementById('result');
+
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+
+                    // إضافة الصورة إلى resultDiv
+                    resultDiv.innerHTML = '';
+                    resultDiv.appendChild(image);
+
+                    // قم بإجراء طلب إلى الخادم للحصول على النتائج (الاسم وغيره)
+                    getResult();
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
