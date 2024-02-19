@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import base64
 import os
-
+import numpy as np
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'C:/Users/user/Desktop/recognitioin/known/uploads'# مسار الملف يلي رح يحفظلي الصورالمرفوع على التطبيق
@@ -119,3 +119,4 @@ def uploaded_file(filename):
 
 if __name__ == '__main__':# تشغيل التطبق
     app.run(debug=True)#هذا يعني أن أي تغيير في الشيفرة سيؤدي إلى إعادة تشغيل التطبيق تلقائيًا بدون الحاجة إلى إعادة تشغيل الخادم يدويً
+app.run(host="0.0.0.0",port=5000)
